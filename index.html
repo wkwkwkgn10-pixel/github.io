@@ -286,7 +286,7 @@
         <input class="key-input" type="text" id="app-key" placeholder="카카오 개발자 콘솔에서 복사" autocomplete="off">
         <button class="save-btn" onclick="saveAppKey()">저장</button>
       </div>
-      <div class="saved-tag" id="key-saved">✅ 저장됨</div>
+      <div class="saved-tag show" id="key-saved">✅ 저장됨</div>
     </div>
     <div class="drawer-section-label" style="margin-top:4px;">앱 설치 안내</div>
     <div class="install-card">
@@ -341,9 +341,9 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js" onload="Kakao.init('6a93b0f4f60a8eb9dd13c91c587dc225')"></script>
 <script>
-  let savedKey = '';
+  let savedKey = '6a93b0f4f60a8eb9dd13c91c587dc225';
 
   function openDrawer() {
     document.getElementById('drawer').classList.add('open');
