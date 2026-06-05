@@ -473,7 +473,9 @@
   function sendKakaoMe() {
     const name = document.getElementById('name').value.trim();
     const phone = document.getElementById('phone').value.trim();
-    const address = document.getElementById('address').value.trim();
+    const sido = document.getElementById('sido').value;
+    const sigungu = document.getElementById('sigungu').value;
+    const address = (sido + ' ' + sigungu).trim();
     const time = document.getElementById('time-display').textContent;
 
     if (!savedKey) { showToast('설정에서 카카오 앱 키를 먼저 저장해주세요', 'error'); return; }
@@ -488,7 +490,7 @@
     }
     if (!name)    { showToast('이름을 입력해주세요', 'error'); return; }
     if (!phone)   { showToast('연락처를 입력해주세요', 'error'); return; }
-    if (!address) { showToast('주소를 입력해주세요', 'error'); return; }
+    if (!sido || !sigungu) { showToast('지역을 선택해주세요', 'error');return; }
 
     const text = '[세환이텍 AS 접수]\n\n👤 이름: ' + name + '\n📞 연락처: ' + phone + '\n📍 주소: ' + address + '\n🕐 접수 시간: ' + time;
 
