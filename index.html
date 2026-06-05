@@ -286,7 +286,30 @@
     <button class="drawer-close" onclick="closeDrawer()">✕</button>
   </div>
   <div class="drawer-body">
-    <div class="drawer-section-label">카카오 연동</div>
+    <div class="drawer-section-label">카카오 로그인</div>
+    <div class="setup-card">
+      <div id="login-status-box">
+        <div id="login-info" style="display:none;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:#FEE500;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">👤</div>
+            <div>
+              <div id="login-nickname" style="font-size:14px;font-weight:700;color:var(--text);">-</div>
+              <div style="font-size:11px;color:var(--text3);">로그인됨</div>
+            </div>
+          </div>
+          <button onclick="kakaoLogout()" style="width:100%;padding:10px;background:transparent;border:0.5px solid var(--error);border-radius:var(--radius-sm);font-size:13px;font-weight:700;color:var(--error);cursor:pointer;font-family:'Noto Sans KR',sans-serif;">로그아웃 (계정 변경)</button>
+        </div>
+        <div id="login-prompt">
+          <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">카카오 로그인하면 접수 메시지를 받을 수 있어요</p>
+          <button onclick="kakaoLogin()" style="width:100%;padding:12px;background:#FEE500;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:700;color:#191919;cursor:pointer;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M12 3C6.48 3 2 6.79 2 11.5c0 2.97 1.76 5.58 4.43 7.14L5.5 21.5l3.12-1.62C9.54 20.27 10.75 20.5 12 20.5c5.52 0 10-3.79 10-8.5S17.52 3 12 3z"/></svg>
+            카카오 로그인
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="drawer-section-label" style="margin-top:4px;">카카오 연동</div>
     <div class="setup-card">
       <div class="setup-title">🔑 JavaScript 앱 키</div>
       <div class="key-row">
@@ -295,17 +318,6 @@
       </div>
       <div class="saved-tag show" id="key-saved">✅ 저장됨</div>
     </div>
-    <div class="drawer-section-label" style="margin-top:4px;">카카오 ID 확인</div>
-    <div class="setup-card">
-      <div class="setup-title">🔍 내 카카오 ID 확인</div>
-      <p style="font-size:12px;color:var(--text3);margin-bottom:10px;">다른 기기에서 로그인 후 이 버튼을 눌러 ID를 확인하세요</p>
-      <button class="save-btn" style="width:100%" onclick="getMyKakaoId()">ID 확인하기</button>
-      <div id="kakao-id-result" style="margin-top:10px;font-size:13px;color:var(--text2);display:none;">
-        카카오 ID: <strong id="kakao-id-value"></strong>
-        <br><span style="font-size:11px;color:var(--text3);">이 ID를 메모해두세요</span>
-      </div>
-    </div>
-
     <div class="drawer-section-label" style="margin-top:4px;">앱 설치 안내</div>
     <div class="install-card">
       📱 <strong>홈 화면에 추가하면 앱처럼 사용 가능!</strong><br>
@@ -432,6 +444,7 @@
   function openDrawer() {
     document.getElementById('drawer').classList.add('open');
     document.getElementById('overlay').classList.add('open');
+    checkLoginStatus();
   }
   function closeDrawer() {
     document.getElementById('drawer').classList.remove('open');
@@ -456,25 +469,46 @@
     e.target.value = v;
   });
 
-  function getMyKakaoId() {
-    if (!Kakao.Auth.getAccessToken()) {
-      Kakao.Auth.login({
-        scope: 'talk_message',
-        success: function() { getMyKakaoId(); },
-        fail: function() { showToast('로그인 실패', 'error'); }
+  function checkLoginStatus() {
+    const token = Kakao.Auth.getAccessToken();
+    if (token) {
+      Kakao.API.request({
+        url: '/v1/user/me',
+        success: function(res) {
+          const nickname = res.properties && res.properties.nickname ? res.properties.nickname : '카카오 사용자';
+          document.getElementById('login-nickname').textContent = nickname;
+          document.getElementById('login-info').style.display = 'block';
+          document.getElementById('login-prompt').style.display = 'none';
+        },
+        fail: function() {
+          document.getElementById('login-info').style.display = 'none';
+          document.getElementById('login-prompt').style.display = 'block';
+        }
       });
-      return;
+    } else {
+      document.getElementById('login-info').style.display = 'none';
+      document.getElementById('login-prompt').style.display = 'block';
     }
-    Kakao.API.request({
-      url: '/v1/user/me',
-      success: function(res) {
-        const id = res.id;
-        document.getElementById('kakao-id-value').textContent = id;
-        document.getElementById('kakao-id-result').style.display = 'block';
+  }
+
+  function kakaoLogin() {
+    Kakao.Auth.login({
+      scope: 'talk_message,profile_nickname',
+      success: function() {
+        showToast('로그인 완료!', 'success');
+        checkLoginStatus();
       },
-      fail: function(err) {
-        showToast('ID 확인 실패: ' + (err.msg || '오류'), 'error');
+      fail: function() {
+        showToast('로그인 실패', 'error');
       }
+    });
+  }
+
+  function kakaoLogout() {
+    Kakao.Auth.logout(function() {
+      document.getElementById('login-info').style.display = 'none';
+      document.getElementById('login-prompt').style.display = 'block';
+      showToast('로그아웃 완료', 'success');
     });
   }
 
@@ -515,7 +549,7 @@
     // 로그인 안된 경우 먼저 로그인
     if (!Kakao.Auth.getAccessToken()) {
       Kakao.Auth.login({
-        scope: 'talk_message',
+        scope: 'talk_message,profile_nickname',
         success: function() { sendKakaoMe(); },
         fail: function() { showToast('카카오 로그인 실패', 'error'); }
       });
@@ -557,7 +591,7 @@
           restore();
           if (err.code === -401) {
             Kakao.Auth.login({
-              scope: 'talk_message',
+              scope: 'talk_message,profile_nickname',
               success: function() { sendKakaoMe(); },
               fail: function() { showToast('카카오 로그인 실패', 'error'); }
             });
