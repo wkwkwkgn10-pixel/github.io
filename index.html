@@ -468,21 +468,24 @@
   });
 
   function checkLoginStatus() {
-    if (Kakao.Auth.getAccessToken()) {
-      document.getElementById('login-info').style.display = 'block';
-      document.getElementById('login-prompt').style.display = 'none';
-    } else {
-      document.getElementById('login-info').style.display = 'none';
-      document.getElementById('login-prompt').style.display = 'block';
-    }
+    setTimeout(function() {
+      const token = Kakao.Auth.getAccessToken();
+      if (token) {
+        document.getElementById('login-info').style.display = 'block';
+        document.getElementById('login-prompt').style.display = 'none';
+      } else {
+        document.getElementById('login-info').style.display = 'none';
+        document.getElementById('login-prompt').style.display = 'block';
+      }
+    }, 500);
   }
 
   function kakaoLogin() {
     Kakao.Auth.login({
       scope: 'talk_message',
-      success: function() {
+      success: function(authObj) {
         showToast('로그인 완료!', 'success');
-        checkLoginStatus();
+        setTimeout(checkLoginStatus, 800);
       },
       fail: function() {
         showToast('로그인 실패', 'error');
@@ -492,7 +495,7 @@
 
   function kakaoLogout() {
     Kakao.Auth.logout(function() {
-      checkLoginStatus();
+      setTimeout(checkLoginStatus, 500);
       showToast('로그아웃 완료', 'success');
     });
   }
