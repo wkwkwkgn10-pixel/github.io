@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AS접수">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>AS 접수</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0f1a;
+      --surface: #1a1a2e;
+      --surface2: #22223b;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.15);
+      --text: #f0f0f5;
+      --text2: rgba(240,240,245,0.55);
+      --text3: rgba(240,240,245,0.3);
+      --accent: #FEE500;
+      --accent-text: #191919;
+      --success: #4ade80;
+      --error: #f87171;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      overflow-x: hidden;
+    }
+
+    .status-bar-safe { height: env(safe-area-inset-top); background: var(--bg); }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(15,15,26,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 16px 20px 14px;
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    header h1 { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+    header p { font-size: 12px; color: var(--text2); margin-top: 1px; }
+
+    .scroll-body {
+      padding: 20px 16px;
+      padding-bottom: calc(100px + env(safe-area-inset-bottom));
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: var(--text3);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      padding-left: 4px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 0.5px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .field-row {
+      padding: 14px 16px;
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .field-row:last-child { border-bottom: none; }
+
+    .field-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .fi-blue { background: rgba(59,130,246,0.15); }
+    .fi-green { background: rgba(74,222,128,0.12); }
+    .fi-orange { background: rgba(251,146,60,0.12); }
+    .fi-purple { background: rgba(167,139,250,0.12); }
+
+    .field-inner { flex: 1; min-width: 0; }
+    .field-inner label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text3);
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .field-inner label .req { color: var(--error); margin-left: 2px; }
+
+    .field-inner input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: var(--text);
+      padding: 0;
+    }
+    .field-inner input::placeholder { color: var(--text3); }
+
+    .time-value {
+      font-size: 15px;
+      color: var(--text2);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* 앱 키 섹션 */
+    .setup-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 0.5px solid var(--border);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .setup-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text2);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .key-row { display: flex; gap: 8px; }
+    .key-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 13px;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: var(--text);
+      outline: none;
+    }
+    .key-input::placeholder { color: var(--text3); }
+    .key-input:focus { border-color: var(--border2); }
+    .save-btn {
+      padding: 10px 14px;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: var(--text2);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .save-btn:active { background: rgba(255,255,255,0.08); }
+    .saved-tag {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--success);
+      margin-top: 8px;
+    }
+    .saved-tag.show { display: flex; }
+
+    /* 하단 고정 버튼 */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0; right: 0;
+      padding: 12px 16px;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
+      background: rgba(15,15,26,0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 0.5px solid var(--border);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: var(--accent-text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.15s, transform 0.1s;
+      letter-spacing: -0.2px;
+    }
+    .btn-submit:active { transform: scale(0.97); opacity: 0.9; }
+    .btn-submit.loading { opacity: 0.5; pointer-events: none; }
+
+    .reset-row {
+      text-align: center;
+      margin-top: 8px;
+    }
+    .reset-btn {
+      background: none;
+      border: none;
+      font-size: 13px;
+      color: var(--text3);
+      cursor: pointer;
+      font-family: 'Noto Sans KR', sans-serif;
+      padding: 4px 8px;
+    }
+
+    /* 토스트 */
+    .toast {
+      position: fixed;
+      top: calc(env(safe-area-inset-top) + 70px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      border-radius: 100px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      opacity: 0;
+      transition: all 0.25s;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 999;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.error { border-color: var(--error); color: var(--error); }
+    .toast.success { border-color: var(--success); color: var(--success); }
+
+    /* 설치 안내 배너 */
+    .install-banner {
+      background: rgba(254,229,0,0.07);
+      border: 0.5px solid rgba(254,229,0,0.2);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 12px;
+      color: rgba(254,229,0,0.7);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .install-banner strong { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<div class="status-bar-safe"></div>
+
+<header>
+  <div class="header-icon">🔧</div>
+  <div>
+    <h1>AS 접수</h1>
+    <p>고객 정보를 입력하고 접수하세요</p>
+  </div>
+</header>
+
+<div class="scroll-body">
+
+  <div class="install-banner">
+    📱 <strong>앱처럼 사용하려면:</strong> 브라우저 하단 공유 버튼 → <strong>홈 화면에 추가</strong>를 탭하세요
+  </div>
+
+  <div class="section-label">카카오 설정</div>
+  <div class="setup-card">
+    <div class="setup-title">🔑 JavaScript 앱 키</div>
+    <div class="key-row">
+      <input class="key-input" type="text" id="app-key" placeholder="카카오 개발자 콘솔에서 복사" autocomplete="off">
+      <button class="save-btn" onclick="saveAppKey()">저장</button>
+    </div>
+    <div class="saved-tag" id="key-saved">✅ 저장됨</div>
+  </div>
+
+  <div class="section-label">고객 정보</div>
+  <div class="card">
+    <div class="field-row">
+      <div class="field-icon fi-blue">👤</div>
+      <div class="field-inner">
+        <label>이름 <span class="req">*</span></label>
+        <input type="text" id="name" placeholder="홍길동" maxlength="20" autocomplete="name">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field-icon fi-green">📞</div>
+      <div class="field-inner">
+        <label>연락처 <span class="req">*</span></label>
+        <input type="tel" id="phone" placeholder="010-0000-0000" maxlength="13" autocomplete="tel">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field-icon fi-orange">📍</div>
+      <div class="field-inner">
+        <label>주소 <span class="req">*</span></label>
+        <input type="text" id="address" placeholder="예: 경기도 부천시 원미구" autocomplete="off">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field-icon fi-purple">🕐</div>
+      <div class="field-inner">
+        <label>접수 시간</label>
+        <div class="time-value" id="time-display">—</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-bar">
+  <button class="btn-submit" id="send-btn" onclick="sendKakaoMe()">
+    <span>💬</span> 접수
+  </button>
+  <div class="reset-row">
+    <button class="reset-btn" onclick="resetForm()">초기화</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+<script>
+  let savedKey = '';
+
+  function updateTime() {
+    const now = new Date();
+    document.getElementById('time-display').textContent = now.toLocaleString('ko-KR', {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+    });
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+
+  document.getElementById('phone').addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g, '');
+    if (v.length <= 3) {}
+    else if (v.length <= 7) v = v.slice(0,3) + '-' + v.slice(3);
+    else v = v.slice(0,3) + '-' + v.slice(3,7) + '-' + v.slice(7,11);
+    e.target.value = v;
+  });
+
+  function saveAppKey() {
+    const key = document.getElementById('app-key').value.trim();
+    if (!key) { showToast('앱 키를 입력해주세요', 'error'); return; }
+    try {
+      if (window.Kakao) {
+        if (!Kakao.isInitialized()) Kakao.init(key);
+        savedKey = key;
+        document.getElementById('key-saved').classList.add('show');
+        showToast('앱 키 저장 완료', 'success');
+      }
+    } catch(e) {
+      showToast('앱 키 오류. 다시 확인해주세요', 'error');
+    }
+  }
+
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (type ? ' ' + type : '');
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => t.className = 'toast', 2800);
+  }
+
+  function sendKakaoMe() {
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const time = document.getElementById('time-display').textContent;
+
+    if (!savedKey) { showToast('카카오 앱 키를 먼저 저장해주세요', 'error'); return; }
+    if (!name)    { showToast('이름을 입력해주세요', 'error'); return; }
+    if (!phone)   { showToast('연락처를 입력해주세요', 'error'); return; }
+    if (!address) { showToast('주소를 입력해주세요', 'error'); return; }
+
+    const text = `[AS 접수 알림]\n\n👤 이름: ${name}\n📞 연락처: ${phone}\n📍 주소: ${address}\n🕐 접수 시간: ${time}`;
+
+    const btn = document.getElementById('send-btn');
+    btn.classList.add('loading');
+    btn.innerHTML = '<span>⏳</span> 전송 중...';
+
+    const restore = () => {
+      btn.classList.remove('loading');
+      btn.innerHTML = '<span>💬</span> 접수';
+    };
+
+    try {
+      Kakao.API.request({
+        url: '/v2/api/talk/memo/default/send',
+        data: {
+          template_object: {
+            object_type: 'text',
+            text: text,
+            link: { mobile_web_url: 'https://kakao.com', web_url: 'https://kakao.com' }
+          }
+        },
+        success: function() {
+          showToast('카카오톡으로 전송 완료! ✅', 'success');
+          restore();
+        },
+        fail: function(err) {
+          restore();
+          if (err.code === -401) {
+            Kakao.Auth.login({
+              success: function() { sendKakaoMe(); },
+              fail: function() { showToast('카카오 로그인 실패', 'error'); }
+            });
+          } else {
+            showToast('전송 실패: ' + (err.msg || '오류'), 'error');
+          }
+        }
+      });
+    } catch(e) {
+      restore();
+      showToast('오류 발생. 앱 키를 확인해주세요', 'error');
+    }
+  }
+
+  function resetForm() {
+    document.getElementById('name').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('address').value = '';
+    showToast('초기화 완료');
+  }
+</script>
+</body>
+</html>
