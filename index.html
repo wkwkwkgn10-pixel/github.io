@@ -444,7 +444,7 @@
             link: { mobile_web_url: 'https://kakao.com', web_url: 'https://kakao.com' }
           }
         },
-        success: function() { showToast('카카오톡으로 전송 완료! ✅', 'success'); restore(); },
+        success: function() { showToast('AS 접수 완료', 'success'); restore(); },
         fail: function(err) {
           restore();
           if (err.code === -401) {
