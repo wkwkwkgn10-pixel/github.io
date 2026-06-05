@@ -403,6 +403,15 @@
     const time = document.getElementById('time-display').textContent;
 
     if (!savedKey) { showToast('설정에서 카카오 앱 키를 먼저 저장해주세요', 'error'); return; }
+    // 로그인 안된 경우 먼저 로그인
+    if (!Kakao.Auth.getAccessToken()) {
+      Kakao.Auth.login({
+        scope: 'talk_message',
+        success: function() { sendKakaoMe(); },
+        fail: function() { showToast('카카오 로그인 실패', 'error'); }
+      });
+      return;
+    }
     if (!name)    { showToast('이름을 입력해주세요', 'error'); return; }
     if (!phone)   { showToast('연락처를 입력해주세요', 'error'); return; }
     if (!address) { showToast('주소를 입력해주세요', 'error'); return; }
@@ -433,6 +442,7 @@
           restore();
           if (err.code === -401) {
             Kakao.Auth.login({
+              scope: 'talk_message',
               success: function() { sendKakaoMe(); },
               fail: function() { showToast('카카오 로그인 실패', 'error'); }
             });
