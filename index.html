@@ -492,7 +492,7 @@
     if (!phone)   { showToast('연락처를 입력해주세요', 'error'); return; }
     if (!sido || !sigungu) { showToast('지역을 선택해주세요', 'error');return; }
 
-    const text = '[세환이텍 AS 접수]\n\n이름: ' + name + '\n연락처: ' + phone + '\n주소: ' + address + '\n접수 시간: ' + time;
+    const text = '[세환이텍 AS 접수]\n\n👤 이름: ' + name + '\n📞 연락처: ' + phone + '\n📍 주소: ' + address + '\n🕐 접수 시간: ' + time;
 
     const btn = document.getElementById('send-btn');
     btn.classList.add('loading');
