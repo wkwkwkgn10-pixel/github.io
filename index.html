@@ -467,6 +467,8 @@
     e.target.value = v;
   });
 
+  const RECEIVER_UUID = 'VmFRYlBlVmJTf0pzQ3tDcUl-UmNTYFlsNw'; // 받는 사람 UUID
+
   function checkLoginStatus() {
     setTimeout(function() {
       if (Kakao.Auth.getAccessToken()) {
@@ -481,7 +483,7 @@
 
   function kakaoLogin() {
     Kakao.Auth.login({
-      scope: 'talk_message',
+      scope: 'talk_message,friends',
       prompts: 'login',
       success: function() {
         showToast('로그인 완료!', 'success');
@@ -537,7 +539,7 @@
     // 로그인 안된 경우 먼저 로그인
     if (!Kakao.Auth.getAccessToken()) {
       Kakao.Auth.login({
-        scope: 'talk_message',
+        scope: 'talk_message,friends',
         success: function() { sendKakaoMe(); },
         fail: function() { showToast('카카오 로그인 실패', 'error'); }
       });
@@ -560,8 +562,9 @@
 
     try {
       Kakao.API.request({
-        url: '/v2/api/talk/memo/default/send',
+        url: '/v1/api/talk/friends/message/default/send',
         data: {
+          receiver_uuids: JSON.stringify([RECEIVER_UUID]),
           template_object: {
             object_type: 'text',
             text: text,
@@ -579,7 +582,7 @@
           restore();
           if (err.code === -401) {
             Kakao.Auth.login({
-              scope: 'talk_message',
+              scope: 'talk_message,friends',
               success: function() { sendKakaoMe(); },
               fail: function() { showToast('카카오 로그인 실패', 'error'); }
             });
