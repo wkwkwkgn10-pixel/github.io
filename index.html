@@ -301,7 +301,7 @@
       <div id="login-prompt">
         <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">카카오 로그인하면 접수 메시지를 받을 수 있어요</p>
         <button onclick="kakaoLogin()" style="width:100%;padding:12px;background:#FEE500;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:700;color:#191919;cursor:pointer;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
-          <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M12 3C6.48 3 2 6.79 2 11.5c0 2.97 1.76 5.58 4.43 7.14L5.5 21.5l3.12-1.62C9.54 20.27 10.75 20.5 12 20.5c5.52 0 10-3.79 10-8.5S17.52 3 12 3z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;flex-shrink:0;"><path d="M12 3C6.48 3 2 6.79 2 11.5c0 2.97 1.76 5.58 4.43 7.14L5.5 21.5l3.12-1.62C9.54 20.27 10.75 20.5 12 20.5c5.52 0 10-3.79 10-8.5S17.52 3 12 3z"/></svg>
           카카오 로그인
         </button>
       </div>
@@ -492,10 +492,26 @@
   }
 
   function kakaoLogout() {
-    Kakao.Auth.logout(function() {
-      setTimeout(checkLoginStatus, 500);
+    try {
+      Kakao.Auth.logout(function() {
+        Kakao.cleanup();
+        Kakao.init('6a93b0f4f60a8eb9dd13c91c587dc225');
+        document.cookie.split(';').forEach(function(c) {
+          document.cookie = c.trim().split('=')[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;domain=.kakao.com';
+        });
+        showToast('로그아웃 완료. 다시 로그인해주세요', 'success');
+        setTimeout(function() {
+          document.getElementById('login-info').style.display = 'none';
+          document.getElementById('login-prompt').style.display = 'block';
+        }, 500);
+      });
+    } catch(e) {
+      Kakao.cleanup();
+      Kakao.init('6a93b0f4f60a8eb9dd13c91c587dc225');
+      document.getElementById('login-info').style.display = 'none';
+      document.getElementById('login-prompt').style.display = 'block';
       showToast('로그아웃 완료', 'success');
-    });
+    }
   }
 
   function saveAppKey() {
@@ -545,7 +561,7 @@
     if (!phone)   { showToast('연락처를 입력해주세요', 'error'); return; }
     if (!sido || !sigungu) { showToast('지역을 선택해주세요', 'error');return; }
 
-    const text = '[세환이텍 AS 접수]\n\n이름: ' + name + '\n연락처: ' + phone + '\n주소: ' + address + '\n접수 시간: ' + time;
+    const text = '[세환이텍 AS 접수]\n\n👤 이름: ' + name + '\n📞 연락처: ' + phone + '\n📍 주소: ' + address + '\n🕐 접수 시간: ' + time;
 
     const btn = document.getElementById('send-btn');
     btn.classList.add('loading');
