@@ -492,26 +492,10 @@
   }
 
   function kakaoLogout() {
-    try {
-      Kakao.Auth.logout(function() {
-        Kakao.cleanup();
-        Kakao.init('6a93b0f4f60a8eb9dd13c91c587dc225');
-        document.cookie.split(';').forEach(function(c) {
-          document.cookie = c.trim().split('=')[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;domain=.kakao.com';
-        });
-        showToast('로그아웃 완료. 다시 로그인해주세요', 'success');
-        setTimeout(function() {
-          document.getElementById('login-info').style.display = 'none';
-          document.getElementById('login-prompt').style.display = 'block';
-        }, 500);
-      });
-    } catch(e) {
-      Kakao.cleanup();
-      Kakao.init('6a93b0f4f60a8eb9dd13c91c587dc225');
-      document.getElementById('login-info').style.display = 'none';
-      document.getElementById('login-prompt').style.display = 'block';
-      showToast('로그아웃 완료', 'success');
-    }
+    var returnUrl = encodeURIComponent(window.location.href);
+    Kakao.Auth.logout(function() {
+      window.location.href = 'https://accounts.kakao.com/logout?continue=' + returnUrl;
+    });
   }
 
   function saveAppKey() {
