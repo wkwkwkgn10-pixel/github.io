@@ -545,8 +545,40 @@
     if (!phone)   { showToast('연락처를 입력해주세요', 'error'); return; }
     if (!sido || !sigungu) { showToast('지역을 선택해주세요', 'error');return; }
 
-    const text = '[세환이텍 AS 접수]\n\n이름: ' + name + '\n연락처: ' + phone + '\n주소: ' + address + '\n접수 시간: ' + time;
+    const text = '[세환이텍 AS 접수]\n\n👤 이름: ' + name + '\n📞 연락처: ' + phone + '\n📍 주소: ' + address + '\n🕐 접수 시간: ' + time;
+// 인트라넷 자동 등록
+const intranetForm = document.createElement('form');
+intranetForm.method = 'POST';
+intranetForm.action = 'http://intranet.sehwan.co.kr/part1/asilji_update.asp';
+intranetForm.target = 'hiddenFrame';
 
+function addField(name, value) {
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = name;
+  input.value = value;
+  intranetForm.appendChild(input);
+}
+
+addField('mode', 'insert');
+
+addField('centername', '부천');
+addField('appmode', '방문');
+
+addField('appmode2', sido);
+addField('appmode3', sigungu);
+
+addField('username', name);
+addField('phone', phone);
+
+addField('ghname', 'AS접수');
+
+addField(
+  'troublecontent',
+  '주소 : ' + address + '\n접수시간 : ' + time
+);
+
+document.body.appendChild(intranetForm);
     const btn = document.getElementById('send-btn');
     btn.classList.add('loading');
     btn.innerHTML = '<span>⏳</span> 전송 중...';
@@ -566,7 +598,9 @@
             link: { mobile_web_url: 'https://wkwkwkgn10-pixel.github.io/github.io/', web_url: 'https://wkwkwkgn10-pixel.github.io/github.io/' }
           }
         },
-        success: function() { showToast('AS 접수 완료', 'success');
+        success: function() { 
+  intranetForm.submit();
+  showToast('AS 접수 완료', 'success');
           restore();
           document.getElementById('name').value = '';
           document.getElementById('phone').value = '';
@@ -600,5 +634,6 @@
     showToast('초기화 완료');
   }
 </script>
+<iframe name="hiddenFrame" style="display:none;"></iframe>
 </body>
 </html>
