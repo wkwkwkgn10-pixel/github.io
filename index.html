@@ -306,7 +306,6 @@
         </button>
       </div>
     </div>
-
     <div class="drawer-section-label" style="margin-top:4px;">카카오 연동</div>
     <div class="setup-card">
       <div class="setup-title">🔑 JavaScript 앱 키</div>
@@ -467,8 +466,6 @@
     e.target.value = v;
   });
 
-  const RECEIVER_UUID = 'VmFRYlBlVmJTf0pzQ3tDcUl-UmNTYFlsNw'; // 받는 사람 UUID
-
   function checkLoginStatus() {
     setTimeout(function() {
       if (Kakao.Auth.getAccessToken()) {
@@ -483,8 +480,7 @@
 
   function kakaoLogin() {
     Kakao.Auth.login({
-      scope: 'talk_message,friends',
-      prompts: 'login',
+      scope: 'talk_message',
       success: function() {
         showToast('로그인 완료!', 'success');
         setTimeout(checkLoginStatus, 800);
@@ -539,7 +535,7 @@
     // 로그인 안된 경우 먼저 로그인
     if (!Kakao.Auth.getAccessToken()) {
       Kakao.Auth.login({
-        scope: 'talk_message,friends',
+        scope: 'talk_message',
         success: function() { sendKakaoMe(); },
         fail: function() { showToast('카카오 로그인 실패', 'error'); }
       });
@@ -549,7 +545,7 @@
     if (!phone)   { showToast('연락처를 입력해주세요', 'error'); return; }
     if (!sido || !sigungu) { showToast('지역을 선택해주세요', 'error');return; }
 
-    const text = '[세환이텍 AS 접수]\n\n👤 이름: ' + name + '\n📞 연락처: ' + phone + '\n📍 주소: ' + address + '\n🕐 접수 시간: ' + time;
+    const text = '[세환이텍 AS 접수]\n\n이름: ' + name + '\n연락처: ' + phone + '\n주소: ' + address + '\n접수 시간: ' + time;
 
     const btn = document.getElementById('send-btn');
     btn.classList.add('loading');
@@ -562,9 +558,8 @@
 
     try {
       Kakao.API.request({
-        url: '/v1/api/talk/friends/message/default/send',
+        url: '/v2/api/talk/memo/default/send',
         data: {
-          receiver_uuids: JSON.stringify([RECEIVER_UUID]),
           template_object: {
             object_type: 'text',
             text: text,
@@ -582,7 +577,7 @@
           restore();
           if (err.code === -401) {
             Kakao.Auth.login({
-              scope: 'talk_message,friends',
+              scope: 'talk_message',
               success: function() { sendKakaoMe(); },
               fail: function() { showToast('카카오 로그인 실패', 'error'); }
             });
